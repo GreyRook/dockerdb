@@ -1,6 +1,6 @@
-===============================
-py.test docker databases
-===============================
+========
+dockerdb
+========
 
 
 .. image:: https://img.shields.io/pypi/v/dockerdb.svg
@@ -15,8 +15,7 @@ py.test docker databases
      :alt: Updates
 
 
-Python Boilerplate contains all the boilerplate you need to create a Python package.
-
+Running databases inside docker for testing purposes.
 
 * Free software: Apache Software License 2.0
 * Documentation: https://dockerdb.readthedocs.io.
@@ -25,4 +24,4 @@ Python Boilerplate contains all the boilerplate you need to create a Python pack
 Features
 --------
 
-* TODO
+* py.test integration
