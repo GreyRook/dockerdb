@@ -37,7 +37,10 @@ def test_http_and_wait():
 
 
 def test_timeout():
-    pass
+    http_server = LazyHTTP(wait=False)
+    assert http_server.check_ready() == False
+    http_server.wait(timeout=0)
+    assert http_server.check_ready() == False
 
 
 def test_mongo():
@@ -50,8 +53,8 @@ def test_mongo():
     client = mongo.pymongo_client()
     server_info = client.server_info()
     assert server_info['version'].startswith('3.5')
-    #
-    # mongo = dockerdb.Mongo(tag='3.4', wait=True)
-    # client = mongo.pymongo_client()
-    # server_info = client.server_info()
-    # assert server_info['version'].startswith('3.4')
+
+    mongo = dockerdb.Mongo(tag='3.4', wait=True)
+    client = mongo.pymongo_client()
+    server_info = client.server_info()
+    assert server_info['version'].startswith('3.4')
