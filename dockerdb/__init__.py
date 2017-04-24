@@ -1,10 +1,22 @@
+import os
 import time
+import shutil
+import tempfile
+import weakref
+import atexit
+import functools
 
 import docker
 
 start_time = int(time.time())
 counter = 0
 client = docker.from_env()
+
+def _remove_weakref(service):
+    # dereferece weakref
+    service = service()
+    if service is not None:
+        service.remove()
 
 
 class Service(object):
@@ -16,11 +28,19 @@ class Service(object):
         global counter
 
         self.client = client
+
         kwargs.setdefault('detach', True)
         name = 'tmp_{}_{}_{}'.format(start_time, self.name, counter)
         kwargs.setdefault('name', name)
-        self.container = client.containers.run(image, **kwargs)
         counter += 1
+
+        kwargs.setdefault('volumes', {})
+        self.share = tempfile.mkdtemp(name)
+        kwargs['volumes'][self.share] = {'bind': self.share, 'mode': 'rw'}
+
+        atexit_callback = functools.partial(_remove_weakref, weakref.ref(self))
+        atexit.register(atexit_callback)
+        self.container = client.containers.run(image, **kwargs)
 
     def inspect(self):
         """get docker inspect data for container"""
@@ -38,12 +58,22 @@ class Service(object):
             time.sleep(0.1)
 
     def remove(self):
-        self.container.remove(force=True)
+        try:
+            self.container.remove(force=True)
+        except docker.errors.NotFound:
+            pass
+
+        if os.path.exists(self.share):
+            shutil.rmtree(self.share)
 
     def __del__(self):
         try:
-            self.container.remove(force=True)
+            self.remove()
         except:
+            # on interpreter shutdown deleting container will
+            # fail as the docker client is already breaking apart.
+            # the atexit callback will be called earlier, taking
+            # care of this case
             pass
 
 
@@ -90,3 +120,9 @@ class Mongo(Service):
 
         server = self.ip_address()
         return pymongo.MongoClient(server, self.port, socketTimeoutMS=100, connectTimeoutMS=100)
+
+    def factory_reset(self):
+        """factory reset the database"""
+        client = self.pymongo_client()
+        for db in client.database_names():
+            client.drop_database(db)
