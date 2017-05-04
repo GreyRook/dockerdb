@@ -75,8 +75,7 @@ def mongo_fixture(scope='function', versions=['latest'], data=None,
         if restore:
             mongorestore(service, restore)
 
-
-        yield client
+        yield service
 
         if not reuse:
             service.remove()
