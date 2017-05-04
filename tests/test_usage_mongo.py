@@ -23,7 +23,8 @@ mongo2 = dockerdb.pytest.mongo_fixture(versions=["3.4"], restore=DUMP_PATH)
 
 def test_mongo_1(mongo):
     # this should be run twice
-    users = mongo['dbname']['user_collection']
+    client = mongo.pymongo_client()
+    users = client['dbname']['user_collection']
     user = users.find_one({'user': 'admin'})
     assert user['password'] == 'secret'
 
@@ -33,13 +34,15 @@ def test_mongo_1(mongo):
 
 def test_mongo_2(mongo):
     # mongo db should be cleared after test_mongo_1
-    users = mongo['dbname']['user_collection']
+    client = mongo.pymongo_client()
+    users = client['dbname']['user_collection']
     user = users.find_one({'user': 'admin'})
     assert user['password'] == 'secret'
     assert users.find().count() == 1
 
 
 def test_mongo_restore(mongo2):
-    users = mongo2['test']['user']
+    client = mongo2.pymongo_client()
+    users = client['test']['user']
     user = users.find_one({'user': 'admin'})
     assert user['password'] == 'reallysecret'
