@@ -10,7 +10,7 @@ import docker
 
 start_time = int(time.time())
 counter = 0
-client = docker.from_env()
+client = docker.from_env(version='auto')
 
 def _remove_weakref(service):
     # dereferece weakref
