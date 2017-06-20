@@ -105,7 +105,9 @@ class Mongo(Service):
 
     def check_ready(self):
         """Check if something responds to ``url``."""
-
+        import pymongo
+        import pymongo.errors
+        
         client = self.pymongo_client()
         try:
             client.admin.command('ismaster')
