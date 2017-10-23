@@ -8,6 +8,8 @@ import functools
 
 import docker
 
+
+__version__ = '0.1.0'
 start_time = int(time.time())
 counter = 0
 client = docker.from_env(version='auto')
@@ -107,7 +109,7 @@ class Mongo(Service):
         """Check if something responds to ``url``."""
         import pymongo
         import pymongo.errors
-        
+
         client = self.pymongo_client()
         try:
             client.admin.command('ismaster')
