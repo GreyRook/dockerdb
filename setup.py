@@ -6,9 +6,6 @@ from setuptools import setup
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('CHANGELOG.rst') as changelog_file:
-    changelog = changelog_file.read()
-
 requirements = [
     'docker',
 ]
@@ -19,7 +16,7 @@ setup(
     name='dockerdb',
     version='0.1.0',
     description="TODO Description",
-    long_description=readme + '\n\n' + changelog,
+    long_description=readme,
     author="Florian Ludwig",
     author_email='f.ludwig@greyrook.com',
     url='https://github.com/GreyRook/dockerdb',
