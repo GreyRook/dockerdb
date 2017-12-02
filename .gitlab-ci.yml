@@ -36,6 +36,6 @@ python3.6:
 pep8:
   image: python:3.6
   script:
-    - pip install pep8
+    - pip install pycodestyle
     - pip install -e .
-    - pep8 ${PYHTON_MODULE}
+    - pycodestyle ${PYHTON_MODULE}
