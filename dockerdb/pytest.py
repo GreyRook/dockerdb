@@ -6,6 +6,9 @@ import pytest
 import dockerdb
 
 
+CONTAINER_CACHE = {}
+
+
 def insert_data(client, data):
     for db in data:
         for collection in data[db]:
@@ -21,7 +24,6 @@ def mongorestore(service, restore):
     service.container.exec_run(['mongorestore', dst])
 
 
-CONTAINER_CACHE = {}
 def get_service(version):
     service = CONTAINER_CACHE[version]
     service.wait()
@@ -30,7 +32,7 @@ def get_service(version):
 
 
 def ensure_service(version):
-    if not version in CONTAINER_CACHE:
+    if version not in CONTAINER_CACHE:
         CONTAINER_CACHE[version] = dockerdb.Mongo(version, wait=False)
 
 

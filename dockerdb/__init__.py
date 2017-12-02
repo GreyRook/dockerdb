@@ -14,6 +14,7 @@ start_time = int(time.time())
 counter = 0
 client = docker.from_env(version='auto')
 
+
 def _remove_weakref(service):
     # dereferece weakref
     service = service()
@@ -123,7 +124,8 @@ class Mongo(Service):
         import pymongo.errors
 
         server = self.ip_address()
-        return pymongo.MongoClient(server, self.port, socketTimeoutMS=100, connectTimeoutMS=100)
+        return pymongo.MongoClient(server, self.port, socketTimeoutMS=100,
+                                                      connectTimeoutMS=100)
 
     def factory_reset(self):
         """factory reset the database"""
