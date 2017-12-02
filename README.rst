@@ -15,7 +15,7 @@ dockerdb
      :alt: Updates
 
 
-Running databases inside tempory docker for testing purposes.
+Running databases inside temporary docker for testing purposes.
 
 * Free software: Apache Software License 2.0
 
