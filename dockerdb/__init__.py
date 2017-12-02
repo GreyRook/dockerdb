@@ -61,10 +61,13 @@ class Service(object):
             time.sleep(0.1)
 
     def remove(self):
-        try:
-            self.container.remove(force=True)
-        except docker.errors.NotFound:
-            pass
+        # this must be safe to call during interpreter shutdown
+        # object might already disintegrate
+        if hasattr(self, 'container'):
+            try:
+                self.container.remove(force=True)
+            except docker.errors.NotFound:
+                pass
 
         if os.path.exists(self.share):
             shutil.rmtree(self.share)
