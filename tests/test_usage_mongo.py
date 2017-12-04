@@ -21,6 +21,12 @@ mongo = dockerdb.pytest.mongo_fixture(versions=["3.4", "3.5"], data=DATA)
 mongo2 = dockerdb.pytest.mongo_fixture(versions=["3.4"], restore=DUMP_PATH)
 
 
+def test_package_consistent():
+    # ensure restore path does actually exist
+    assert os.path.exists(os.path.join(DUMP_PATH, 'test', 'user.bson'))
+    assert os.path.exists(os.path.join(DUMP_PATH, 'test', 'user.metadata.json'))
+
+
 def test_mongo_1(mongo):
     # this should be run twice
     client = mongo.pymongo_client()
