@@ -1,11 +1,12 @@
 variables:
   PYHTON_MODULE: 'dockerdb'
+  PYTHON_MODULE_EXTRAS: 'mongo'
 
 
 .test_template: &test_def
   script:
   - pip install pytest pytest-cov pep8
-  - pip install -e .
+  - pip install -e .[${PYTHON_MODULE_EXTRAS}]
   - docker ps -a
   - py.test --cov ${PYHTON_MODULE} --cov doc --cov test
 
@@ -31,5 +32,5 @@ pep8:
   image: python:3.6
   script:
     - pip install pycodestyle
-    - pip install -e .
+    - pip install -e .[${PYTHON_MODULE_EXTRAS}]
     - pycodestyle ${PYHTON_MODULE}
