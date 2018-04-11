@@ -131,7 +131,7 @@ class Mongo(Service):
 
         server = self.ip_address()
         return pymongo.MongoClient(
-            server, self.mongo_port, socketTimeoutMS=100, connectTimeoutMS=100)
+            server, self.port, socketTimeoutMS=100, connectTimeoutMS=100)
 
     def factory_reset(self):
         """factory reset the database"""
