@@ -65,7 +65,7 @@ class Service(object):
         # object might already disintegrate
         if hasattr(self, 'container'):
             try:
-                self.container.remove(force=True)
+                self.container.remove(force=True, v=True)
             except docker.errors.NotFound:
                 pass
 
