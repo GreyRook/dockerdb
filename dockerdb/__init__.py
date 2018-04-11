@@ -102,10 +102,13 @@ class HTTPServer(Service):
 
 class Mongo(Service):
     name = 'mongo'
-    port = 27017
+    mongo_port = 27017
 
-    def __init__(self, tag, wait=False, **kwargs):
-        Service.__init__(self, 'mongo:' + tag)
+    def __init__(self, tag, wait=False, port=27017, **kwargs):
+        self.port = port
+
+        ports = {'{}/tcp'.format(self.mongo_port): ('127.0.0.1', self.port)}
+        Service.__init__(self, 'mongo:' + tag, ports=ports)
         if wait:
             self.wait()
 
@@ -127,8 +130,8 @@ class Mongo(Service):
         import pymongo.errors
 
         server = self.ip_address()
-        return pymongo.MongoClient(server, self.port, socketTimeoutMS=100,
-                                                      connectTimeoutMS=100)
+        return pymongo.MongoClient(
+            server, self.mongo_port, socketTimeoutMS=100, connectTimeoutMS=100)
 
     def factory_reset(self):
         """factory reset the database"""
