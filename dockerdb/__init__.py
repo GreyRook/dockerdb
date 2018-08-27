@@ -114,7 +114,6 @@ class Mongo(Service):
 
     def check_ready(self):
         """Check if something responds to ``url``."""
-        import pymongo
         import pymongo.errors
 
         client = self.pymongo_client()
@@ -127,7 +126,6 @@ class Mongo(Service):
     def pymongo_client(self):
         # lazy load pymongo
         import pymongo
-        import pymongo.errors
 
         server = self.ip_address()
         return pymongo.MongoClient(
