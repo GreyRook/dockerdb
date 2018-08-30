@@ -104,11 +104,20 @@ class Mongo(Service):
     name = 'mongo'
     mongo_port = 27017
 
-    def __init__(self, tag, wait=False, port=27017, **kwargs):
+    def __init__(self, tag, wait=False, port=27017, replicaset=None, **kwargs):
         self.port = port
 
+        if replicaset is True:
+            replicaset = 'rs0'
+
+        self.replicaset_ready = False
+        self.replicaset = replicaset
+
+        if replicaset:
+            kwargs['command'] = ['mongod', '--replSet', replicaset]
+
         ports = {'{}/tcp'.format(self.mongo_port): ('127.0.0.1', self.port)}
-        Service.__init__(self, 'mongo:' + tag, ports=ports)
+        Service.__init__(self, 'mongo:' + tag, ports=ports, **kwargs)
         if wait:
             self.wait()
 
@@ -118,11 +127,27 @@ class Mongo(Service):
 
         client = self.pymongo_client()
         try:
-            client.admin.command('ismaster')
-            return True
+            is_master = client.admin.command('ismaster')
         except pymongo.errors.ConnectionFailure:
             return False
 
+        if self.replicaset and not self.replicaset_ready:
+            host = '{}:{}'.format(self.ip_address(), self.port)
+            conf = {
+                '_id': self.replicaset,
+                'members': [{'_id': 0, 'host': host}]
+            }
+            try:
+                client.admin.command('replSetInitiate', conf)
+                self.replicaset_ready = True
+            except pymongo.errors.OperationFailure:
+                # already initlized
+                self.replicaset_ready = True
+            except pymongo.errors.NetworkTimeout:
+                # for some reason this likes to time out
+                pass
+
+        return is_master
     def pymongo_client(self):
         # lazy load pymongo
         import pymongo
