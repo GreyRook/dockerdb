@@ -161,6 +161,9 @@ class Mongo(Service):
         import pymongo
         return pymongo.MongoClient(**self.client_args())
 
+    def asyncio_client(self):
+        import motor.motor_asyncio
+        return motor.motor_asyncio.AsyncIOMotorClient(**self.client_args())
 
     def factory_reset(self):
         """factory reset the database"""
