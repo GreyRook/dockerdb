@@ -148,13 +148,19 @@ class Mongo(Service):
                 pass
 
         return is_master
-    def pymongo_client(self):
-        # lazy load pymongo
-        import pymongo
 
-        server = self.ip_address()
-        return pymongo.MongoClient(
-            server, self.port, socketTimeoutMS=100, connectTimeoutMS=100)
+    def client_args(self):
+        host = '{}:{}'.format(self.ip_address(), self.port)
+        return {
+            'host': [host],
+            'socketTimeoutMS': 200,
+            'connectTimeoutMS': 200
+        }
+
+    def pymongo_client(self):
+        import pymongo
+        return pymongo.MongoClient(**self.client_args())
+
 
     def factory_reset(self):
         """factory reset the database"""
