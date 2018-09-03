@@ -145,9 +145,11 @@ class Mongo(Service):
                 self.replicaset_ready = True
             except pymongo.errors.NetworkTimeout:
                 # for some reason this likes to time out
-                pass
+                return False
 
-        return is_master
+        if self.replicaset:
+            return is_master.get('ismaster', False)
+        return True
 
     def client_args(self):
         host = '{}:{}'.format(self.ip_address(), self.port)
@@ -169,4 +171,5 @@ class Mongo(Service):
         """factory reset the database"""
         client = self.pymongo_client()
         for db in client.database_names():
-            client.drop_database(db)
+            if db not in ('admin', 'config', 'local'):
+                client.drop_database(db)
