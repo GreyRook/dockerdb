@@ -101,10 +101,22 @@ class HTTPServer(Service):
 
 
 class Mongo(Service):
+    """Mongo in a docker container
+
+    Starts docker on a it's default port:
+    ```
+    db_docker = dockerdb.Mongo('4.0.0', wait=True)
+    ```
+
+    """
     name = 'mongo'
     mongo_port = 27017
 
     def __init__(self, tag, wait=False, port=27017, replicaset=None, **kwargs):
+        """
+
+        * wait - if true the call blocks until MongoDB is ready to accept clients
+        """
         self.port = port
 
         if replicaset is True:
