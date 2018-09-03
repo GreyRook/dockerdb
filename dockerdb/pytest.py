@@ -31,14 +31,14 @@ def get_service(version):
     return service
 
 
-def ensure_service(version, port):
+def ensure_service(version, replicaset, port):
     if version not in CONTAINER_CACHE:
         CONTAINER_CACHE[version] = dockerdb.Mongo(
-            version, wait=False, port=port)
+            version, wait=False, replicaset=replicaset, port=port)
 
 
 def mongo_fixture(scope='function', versions=['latest'], data=None,
-                  restore=None, reuse=True, port=27017):
+                  restore=None, reuse=True, replicaset=None, port=27017):
     """create ficture for py.test
 
     Attributes:
@@ -62,15 +62,17 @@ def mongo_fixture(scope='function', versions=['latest'], data=None,
     # parallelized start of different versions
     if reuse:
         for version in versions:
-            ensure_service(version, port)
+            ensure_service(version, replicaset, port)
 
     @pytest.fixture(scope=scope,  params=versions)
     def mongo(request):
         if reuse:
             service = get_service(request.param)
         else:
-            service = dockerdb.Mongo(request.param, wait=True, port=port)
+            service = dockerdb.Mongo(request.param, wait=True,
+                                     replicaset=replicaset, port=port)
         client = service.pymongo_client()
+        service.wait()
 
         if data:
             insert_data(client, data)
