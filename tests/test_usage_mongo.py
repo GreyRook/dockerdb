@@ -1,7 +1,8 @@
 import os
 
 import pytest
-import dockerdb.pytest
+import dockerdb.mongo_pytest
+
 
 BASE_PATH = os.path.dirname(__file__)
 DUMP_PATH = os.path.join(BASE_PATH, 'dump')
@@ -15,10 +16,10 @@ DATA = {
 }
 
 # have two different versions of mongo with static data
-mongo = dockerdb.pytest.mongo_fixture(versions=["3.4", "3.5"], data=DATA)
+mongo = dockerdb.mongo_pytest.mongo_fixture(versions=["3.4", "3.5"], data=DATA)
 
 # with data from a mongodump backup
-mongo2 = dockerdb.pytest.mongo_fixture(versions=["3.4"], restore=DUMP_PATH)
+mongo2 = dockerdb.mongo_pytest.mongo_fixture(versions=["3.4"], restore=DUMP_PATH)
 
 
 def test_package_consistent():

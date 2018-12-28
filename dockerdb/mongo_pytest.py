@@ -3,7 +3,7 @@ import os
 import shutil
 
 import pytest
-import dockerdb
+import dockerdb.mongo
 
 
 CONTAINER_CACHE = {}
@@ -33,8 +33,8 @@ def get_service(version):
 
 def ensure_service(version, replicaset, port):
     if version not in CONTAINER_CACHE:
-        CONTAINER_CACHE[version] = dockerdb.Mongo(
-            version, wait=False, replicaset=replicaset, port=port)
+        CONTAINER_CACHE[version] = dockerdb.mongo.Mongo(
+            version, wait=False, replicaset=replicaset, exposed_port=port)
 
 
 def mongo_fixture(scope='function', versions=['latest'], data=None,
@@ -69,8 +69,8 @@ def mongo_fixture(scope='function', versions=['latest'], data=None,
         if reuse:
             service = get_service(request.param)
         else:
-            service = dockerdb.Mongo(request.param, wait=True,
-                                     replicaset=replicaset, port=port)
+            service = dockerdb.service.Mongo(request.param, wait=True,
+                                     replicaset=replicaset, exposed_port=port)
         client = service.pymongo_client()
         service.wait()
 
