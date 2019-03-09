@@ -8,10 +8,12 @@ import functools
 
 import docker
 
+import dockerdb
+
 
 start_time = int(time.time())
 counter = 0
-client = docker.from_env(version='auto')
+client = dockerdb.docker_client
 
 
 def _remove_weakref(service):
@@ -35,6 +37,7 @@ class Service(object):
         kwargs.setdefault('detach', True)
         name = 'tmp_{}_{}_{}'.format(start_time, self.name, counter)
         kwargs.setdefault('name', name)
+        kwargs.setdefault('network', dockerdb.my_network_id)
         counter += 1
 
         kwargs.setdefault('volumes', {})
@@ -52,7 +55,15 @@ class Service(object):
         return self.client.api.inspect_container(self.container.id)
 
     def ip_address(self):
-        return self.inspect()['NetworkSettings']['IPAddress']
+        network_settings = self.inspect()['NetworkSettings']
+        ip_address = network_settings['IPAddress']
+        if ip_address == '':
+            networks = network_settings['Networks']
+            assert len(networks) == 1
+            network = next(iter(networks.values()))
+            ip_address = network['IPAddress']
+
+        return ip_address
 
     def wait(self, timeout=None):
         if timeout is None:
