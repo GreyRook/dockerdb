@@ -27,8 +27,10 @@ class Mongo(dockerdb.service.Service):
         self.replicaset_ready = False
         self.replicaset = replicaset
 
+        kwargs['command'] = ['mongod', '--bind_ip', '0.0.0.0']
         if replicaset:
-            kwargs['command'] = ['mongod', '--replSet', replicaset]
+            kwargs['command'].extend(['--replSet', replicaset])
+
 
         ports = {}
         if exposed_port:
