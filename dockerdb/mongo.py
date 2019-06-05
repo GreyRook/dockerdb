@@ -31,7 +31,6 @@ class Mongo(dockerdb.service.Service):
         if replicaset:
             kwargs['command'].extend(['--replSet', replicaset])
 
-
         ports = {}
         if exposed_port:
             container_port = '{}/tcp'.format(self.mongo_port)
@@ -49,7 +48,7 @@ class Mongo(dockerdb.service.Service):
             return False
 
         if self.replicaset and not self.replicaset_ready:
-            host = '{}:{}'.format(self.ip_address(), self.port)
+            host = '{}:{}'.format(self.ip_address(), self.exposed_port)
             conf = {
                 '_id': self.replicaset,
                 'members': [{'_id': 0, 'host': host}]
