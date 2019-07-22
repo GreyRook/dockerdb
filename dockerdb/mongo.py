@@ -1,5 +1,7 @@
 import dockerdb.service
 
+from copy import copy
+
 
 class Mongo(dockerdb.service.Service):
     """Mongo in a docker container
@@ -13,13 +15,24 @@ class Mongo(dockerdb.service.Service):
     name = 'mongo'
     mongo_port = 27017
 
-    def __init__(self, tag, wait=False, exposed_port=None, replicaset=None, **kwargs):
+    default_client_args = {
+        'socketTimeoutMS': 200,
+        'connectTimeoutMS': 200
+    }
+
+    def __init__(self, tag, wait=False, exposed_port=None, replicaset=None,
+                 client_args=None, **kwargs):
         """
 
         * port - expose database to host on `port`
         * wait - if true the call blocks until MongoDB is ready to accept clients
         """
         self.exposed_port = exposed_port
+
+        if client_args is None:
+            client_args = {}
+
+        self._client_args = client_args
 
         if replicaset is True:
             replicaset = 'rs0'
@@ -68,6 +81,9 @@ class Mongo(dockerdb.service.Service):
         return True
 
     def client_args(self):
+        client_args = copy(self.default_client_args)
+        client_args.update(self._client_args)
+
         if dockerdb.inside_docker:
             ip = self.ip_address()
             port = self.mongo_port
@@ -76,11 +92,9 @@ class Mongo(dockerdb.service.Service):
             port = self.exposed_port
 
         host = '{}:{}'.format(ip, port)
-        return {
-            'host': [host],
-            'socketTimeoutMS': 200,
-            'connectTimeoutMS': 200
-        }
+        client_args['host'] = [host]
+
+        return client_args
 
     def pymongo_client(self):
         if self.exposed_port is None:
