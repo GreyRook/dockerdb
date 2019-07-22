@@ -59,6 +59,7 @@ def mongo_fixture(scope='function', versions=['latest'], data=None,
         restore (str): path to directory containing a mongo dump
         reuse (bool): wether to reuse containers or create a new container
             for every requested injection
+        client_args(dict): arguments that get passed to the pymongo client
 
     """
 
