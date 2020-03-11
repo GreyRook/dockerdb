@@ -30,8 +30,11 @@ def test_package_consistent():
     assert os.path.exists(os.path.join(DUMP_PATH, 'test', 'user.bson'))
     assert os.path.exists(os.path.join(DUMP_PATH, 'test', 'user.metadata.json'))
 
-    assert os.path.exists(os.path.join(BROKEN_DUMP_PATH, 'test', 'user.bson'))
-    assert os.path.exists(os.path.join(BROKEN_DUMP_PATH, 'test', 'user.metadata.json'))
+    dump_data_path = os.path.join(BROKEN_DUMP_PATH, 'test', 'user.bson')
+    dump_metadata_path = os.path.join(
+        BROKEN_DUMP_PATH, 'test', 'user.metadata.json')
+    assert os.path.exists(dump_data_path)
+    assert os.path.exists(dump_metadata_path)
 
 
 def test_mongo_1(mongo):
