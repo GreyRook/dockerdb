@@ -18,7 +18,7 @@ test_requirements = []
 
 setup(
     name='dockerdb',
-    version='0.6.0',
+    version='0.6.1',
     description="TODO Description",
     long_description=readme,
     author="Florian Ludwig",
