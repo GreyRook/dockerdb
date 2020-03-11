@@ -2,12 +2,15 @@ from __future__ import absolute_import
 import os
 import shutil
 import subprocess
+import logging
 
 import pytest
 import dockerdb.mongo
 
 
 CONTAINER_CACHE = {}
+
+LOG = logging.getLogger(__name__)
 
 
 def insert_data(client, data):
@@ -26,6 +29,8 @@ def mongorestore(service, restore):
     exit_code, output = service.container.exec_run(command)
 
     if exit_code != 0:
+        LOG.error(output.decode('utf-8'))
+
         raise subprocess.CalledProcessError(exit_code, command, output)
 
 
