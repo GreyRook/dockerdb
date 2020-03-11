@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import shutil
+import subprocess
 
 import pytest
 import dockerdb.mongo
@@ -21,7 +22,11 @@ def mongorestore(service, restore):
     if os.path.exists(dst):
         shutil.rmtree(dst)
     shutil.copytree(restore, dst)
-    service.container.exec_run(['mongorestore', dst])
+    command = ['mongorestore', dst]
+    exit_code, output = service.container.exec_run(command)
+
+    if exit_code != 0:
+        raise subprocess.CalledProcessError(exit_code, command, output)
 
 
 def get_service(version):

@@ -18,7 +18,7 @@ def get_docker_infos():
         containers = [c.id for c in network.containers]
         print('network', network, containers, my_container_id in containers)
         for c in containers:
-            print(my_container_id, c, c==my_container_id)
+            print(my_container_id, c, c == my_container_id)
         if my_container_id in containers:
             my_network_id = network.id
             break
@@ -30,4 +30,3 @@ def get_docker_infos():
 my_container_id = my_network_id = None
 if inside_docker:
     my_container_id, my_network_id = get_docker_infos()
-

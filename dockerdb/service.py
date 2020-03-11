@@ -23,7 +23,6 @@ def _remove_weakref(service):
         service.remove()
 
 
-
 class Service(object):
     """Base class for docker based services"""
     timeout = 30.0
@@ -111,4 +110,3 @@ class HTTPServer(Service):
             return True
         except requests.exceptions.ConnectionError:
             return False
-
